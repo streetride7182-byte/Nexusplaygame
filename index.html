@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>NEXUS PLAY — Flight Arena</title>
+<style>
+:root{--bg:#090d18;--panel:#121a2d;--panel2:#18233b;--line:#263451;--cyan:#38d9ff;--gold:#ffd166;--green:#36d399;--red:#fb7185;--muted:#93a4c2;--white:#f4f7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1b3158 0,#090d18 55%);color:var(--white);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer}
+.wrap{max-width:1440px;margin:auto;padding:20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 4px 22px}
+.brand{font-size:25px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(90deg,var(--cyan),var(--gold));color:transparent;background-clip:text}
+.brand small{display:block;font-size:10px;letter-spacing:3px;color:var(--muted);margin-top:4px}
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.pill{background:#111b30;border:1px solid var(--line);border-radius:30px;padding:10px 15px;color:var(--muted);font-size:13px}.pill strong{color:var(--gold);font-size:16px;margin-left:6px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
+.panel{background:linear-gradient(160deg,rgba(23,34,57,.97),rgba(14,21,37,.98));border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px #0005}
+.game{padding:18px}.game-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.eyebrow{color:var(--muted);font-size:11px;letter-spacing:2px;font-weight:800}.status{font-size:12px;color:var(--green);background:#12352f;padding:7px 11px;border-radius:20px}
+.stage{height:370px;position:relative;overflow:hidden;border-radius:14px;border:1px solid #29415f;background:linear-gradient(180deg,#101f3b 0%,#142d4a 58%,#102033 59%,#0b1727 100%)}
+.stage:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,#b5e8ff22 0 2px,transparent 3px),radial-gradient(circle at 72% 16%,#b5e8ff22 0 2px,transparent 3px),radial-gradient(circle at 48% 34%,#b5e8ff22 0 1px,transparent 2px);background-size:190px 130px}
+.cloud{position:absolute;width:120px;height:28px;background:#d8efff14;border-radius:50%;filter:blur(9px);top:24%;left:15%}.cloud.c2{top:42%;left:70%;transform:scale(1.4)}
+.horizon{position:absolute;bottom:0;left:0;right:0;height:42%;background:linear-gradient(160deg,transparent 0 20%,#1b4260 20% 21%,transparent 21%),linear-gradient(180deg,#112a42,#0b1727)}
+#flightPath{position:absolute;inset:0;width:100%;height:100%}
+#plane{position:absolute;left:7%;bottom:12%;font-size:48px;transform:rotate(-12deg);filter:drop-shadow(0 0 15px #38d9ff88);transition:transform .08s linear}
+.multiplier{position:absolute;top:35%;left:0;right:0;text-align:center;font-size:clamp(48px,8vw,82px);font-weight:950;letter-spacing:-3px;text-shadow:0 5px 30px #0009;color:var(--white)}
+.multiplier.live{color:var(--cyan)}.multiplier.bust{color:var(--red)}
+.stage-message{position:absolute;top:58%;left:0;right:0;text-align:center;color:#d3e4fa;font-size:13px;letter-spacing:1px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+.field label{display:block;color:var(--muted);font-size:12px;margin:0 0 7px 2px}.field input{width:100%;padding:13px 12px;border-radius:10px;border:1px solid var(--line);background:#0b1323;color:var(--white);outline:none}.field input:focus{border-color:var(--cyan)}
+.quick{display:flex;gap:6px;margin-top:7px}.quick button{flex:1;background:#202e49;color:#cbd8ed;border:1px solid #30415f;border-radius:7px;padding:6px;font-size:11px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.btn{border:0;border-radius:11px;padding:15px;font-weight:900;letter-spacing:.4px}.primary{background:linear-gradient(100deg,#ffd166,#ffad42);color:#1a1a1a}.cash{background:linear-gradient(100deg,#36d399,#16b981);color:#05251c}.btn:disabled{opacity:.4;cursor:not-allowed}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin:13px 2px 0}
+.side{padding:18px;display:flex;flex-direction:column;gap:18px}.side h2{font-size:14px;letter-spacing:1.5px;margin:0 0 12px;color:#dbe7fa}
+.statrow{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;padding:9px 0;border-bottom:1px solid #263451}.statrow strong{color:var(--white)}
+.toggleline{display:flex;align-items:center;gap:8px;margin-top:13px;color:var(--muted);font-size:12px}.toggleline input{accent-color:var(--cyan)}
+.history{max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:7px}.history-item{display:flex;justify-content:space-between;background:#0b1323;padding:9px 10px;border-radius:8px;font-size:12px}.history-item strong{color:var(--cyan)}.empty{font-size:12px;color:var(--muted);padding:10px 0}
+.footer{text-align:center;color:#7183a2;font-size:11px;padding:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#182742;border:1px solid #3b5278;border-radius:12px;padding:12px 18px;box-shadow:0 8px 30px #0008;font-size:13px;display:none;z-index:5}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.side section:last-child{grid-column:1/-1}}
+@media(max-width:560px){.wrap{padding:12px}.brand{font-size:21px}.stage{height:310px}.game{padding:12px}.side{display:flex}.controls{gap:8px}.actions{grid-template-columns:1fr}.header-right{gap:6px}.pill{padding:8px 10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">NEXUS PLAY<small>FLIGHT ARENA · DEMO</small></div>
+  <div class="header-right">
+    <div class="pill">PLAYER <strong id="playerName">GUEST</strong></div>
+    <div class="pill">DEMO BALANCE <strong>₹<span id="balance">10,000.00</span></strong></div>
+  </div>
+</header>
+<div class="layout">
+<main class="panel game">
+  <div class="game-top"><div><div class="eyebrow">JET FLIGHT · CRASH SIMULATOR</div></div><div class="status" id="status">● READY FOR TAKEOFF</div></div>
+  <div class="stage" id="stage">
+    <div class="cloud"></div><div class="cloud c2"></div><div class="horizon"></div>
+    <svg id="flightPath" viewBox="0 0 1000 370" preserveAspectRatio="none"><path id="trail" d="" fill="none" stroke="#38d9ff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>
+    <div id="plane">✈️</div>
+    <div class="multiplier" id="multiplier">1.00x</div>
+    <div class="stage-message" id="message">PLACE A DEMO BET TO JOIN THE NEXT FLIGHT</div>
+  </div>
+  <div class="controls">
+    <div class="field"><label for="bet">BET AMOUNT (₹ demo credits)</label><input id="bet" type="number" min="1" max="10000" step="1" value="100"><div class="quick"><button data-bet="100">₹100</button><button data-bet="250">₹250</button><button data-bet="500">₹500</button><button data-bet="1000">₹1k</button></div></div>
+    <div class="field"><label for="autoTarget">AUTO CASH-OUT TARGET (x)</label><input id="autoTarget" type="number" min="1.01" max="100" step=".01" value="2.00"><label class="toggleline"><input type="checkbox" id="autoEnabled"> Enable auto cash-out</label></div>
+  </div>
+  <div class="actions"><button class="btn primary" id="betBtn">✈ PLACE BET</button><button class="btn cash" id="cashBtn" disabled>✓ CASH OUT</button></div>
+  <p class="note">Demo simulation only. No real-money betting, deposits, withdrawals, or cash prizes. Each round uses a randomly generated crash point for entertainment.</p>
+</main>
+<aside class="panel side">
+  <section><h2>FLIGHT SUMMARY</h2><div class="statrow"><span>Current round</span><strong id="round">#1</strong></div><div class="statrow"><span>Current multiplier</span><strong id="sideMult">1.00x</strong></div><div class="statrow"><span>Active stake</span><strong id="activeStake">₹0.00</strong></div><div class="statrow"><span>Last result</span><strong id="lastResult">—</strong></div></section>
+  <section><h2>YOUR SESSION</h2><div class="statrow"><span>Rounds played</span><strong id="played">0</strong></div><div class="statrow"><span>Successful cash-outs</span><strong id="wins">0</strong></div><div class="statrow"><span>Demo net result</span><strong id="net">₹0.00</strong></div><button id="resetBtn" class="btn" style="width:100%;margin-top:13px;background:#253653;color:#dce8fa;padding:11px">RESET DEMO</button></section>
+  <section><h2>RECENT FLIGHTS</h2><div class="history" id="history"><div class="empty">No flights yet. Your results will appear here.</div></div></section>
+</aside>
+</div>
+<div class="footer">NEXUS PLAY · Original demo interface · All credits are fictional</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+let balance=10000,round=1,playing=false,active=false,stake=0,mult=1,crashAt=0,startAt=0,raf=0,played=0,wins=0,net=0,history=[];
+const fmt=n=>Number(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+function update(){
+ $('balance').textContent=fmt(balance);$('round').textContent='#'+round;$('sideMult').textContent=mult.toFixed(2)+'x';$('activeStake').textContent='₹'+fmt(active?stake:0);
+ $('played').textContent=played;$('wins').textContent=wins;$('net').textContent=(net<0?'-':'')+'₹'+fmt(Math.abs(net));
+ $('betBtn').disabled=playing||active;$('cashBtn').disabled=!playing||!active;
+}
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').style.display='none',2400)}
+function addHistory(value,result){history.unshift({value,result});history=history.slice(0,12);$('history').innerHTML=history.map(x=>`<div class="history-item"><span>${x.result}</span><strong>${x.value.toFixed(2)}x</strong></div>`).join('')}
+function drawFlight(){
+ const p=Math.min(1,(mult-1)/Math.max(.01,crashAt-1));const x=70+p*820,y=290-p*230;
+ $('plane').style.left=(7+p*78)+'%';$('plane').style.bottom=(12+p*60)+'%';$('plane').style.transform=`rotate(${-12-p*18}deg)`;
+ $('trail').setAttribute('d',`M 70 300 Q ${x*.45} ${300-p*45} ${x} ${y}`);
+}
+function startRound(){
+ const amount=Number($('bet').value),auto=Number($('autoTarget').value);
+ if(!Number.isFinite(amount)||amount<1||amount>balance){toast('Enter a valid stake within your demo balance.');return}
+ if($('autoEnabled').checked&&(!Number.isFinite(auto)||auto<=1||auto>100)){toast('Auto target must be between 1.01x and 100x.');return}
+ stake=amount;balance-=stake;active=true;playing=true;mult=1;crashAt=+(1.05+Math.pow(Math.random(),2.1)*9.5).toFixed(2);startAt=performance.now();
+ $('status').textContent='● AIRBORNE';$('status').style.color='var(--cyan)';$('message').textContent='FLIGHT IN PROGRESS — WATCH THE MULTIPLIER';$('multiplier').className='multiplier live';$('trail').setAttribute('d','');$('plane').style.left='7%';$('plane').style.bottom='12%';
+ update();raf=requestAnimationFrame(tick);
+}
+function tick(now){
+ if(!playing)return;
+ const elapsed=(now-startAt)/1000;
+ mult=1+Math.pow(elapsed,1.22)*.34;
+ if($('autoEnabled').checked&&active&&mult>=Number($('autoTarget').value)){mult=Number($('autoTarget').value);cashOut(true);return}
+ if(mult>=crashAt){mult=crashAt;drawFlight();bust();return}
+ $('multiplier').textContent=mult.toFixed(2)+'x';$('sideMult').textContent=mult.toFixed(2)+'x';drawFlight();raf=requestAnimationFrame(tick);
+}
+function cashOut(auto=false){
+ if(!playing||!active)return;
+ const payout=stake*mult;balance+=payout;net+=payout-stake;wins++;active=false;playing=false;cancelAnimationFrame(raf);played++;
+ $('multiplier').textContent=mult.toFixed(2)+'x';$('message').textContent=(auto?'AUTO CASH-OUT':'CASHED OUT')+' · WON ₹'+fmt(payout);$('status').textContent='● CASHED OUT';$('status').style.color='var(--green)';
+ $('lastResult').textContent=mult.toFixed(2)+'x';addHistory(mult,auto?'AUTO CASH-OUT':'CASH-OUT');round++;update();toast('Demo payout: ₹'+fmt(payout));
+}
+function bust(){
+ playing=false;cancelAnimationFrame(raf);played++;net-=stake;
+ $('multiplier').textContent=mult.toFixed(2)+'x';$('multiplier').className='multiplier bust';$('message').textContent='THE PLANE CRASHED · STAKE LOST';$('status').textContent='● FLIGHT ENDED';$('status').style.color='var(--red)';
+ $('lastResult').textContent=mult.toFixed(2)+'x';addHistory(mult,'CRASH');active=false;round++;update();toast('Flight ended. Your demo stake was lost.');
+}
+$('betBtn').addEventListener('click',startRound);$('cashBtn').addEventListener('click',()=>cashOut(false));
+document.querySelectorAll('[data-bet]').forEach(b=>b.addEventListener('click',()=>{$('bet').value=b.dataset.bet}));
+$('resetBtn').addEventListener('click',()=>{if(playing){toast('Finish the current flight before resetting.');return}balance=10000;played=0;wins=0;net=0;round=1;history=[];$('history').innerHTML='<div class="empty">No flights yet. Your results will appear here.</div>';$('lastResult').textContent='—';mult=1;$('multiplier').textContent='1.00x';$('multiplier').className='multiplier';$('message').textContent='PLACE A DEMO BET TO JOIN THE NEXT FLIGHT';$('status').textContent='● READY FOR TAKEOFF';$('status').style.color='var(--green)';$('plane').style.left='7%';$('plane').style.bottom='12%';$('trail').setAttribute('d','');update();toast('Demo session reset.')});
+const name=prompt('Welcome to Nexus Play! Enter a display name:');if(name&&name.trim())$('playerName').textContent=name.trim().slice(0,16).toUpperCase();
+update();
+})();
+</script>
+</body>
+</html>
